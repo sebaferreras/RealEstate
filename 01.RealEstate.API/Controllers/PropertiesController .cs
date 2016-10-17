@@ -4,15 +4,24 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using _02.RealEstate.Domain.Entities;
+using _02.RealEstate.Domain.IServices;
 
 namespace _01.RealEstate.API.Controllers
 {
-    public class ValuesController : ApiController
+    public class PropertiesController : ApiController
     {
-        // GET api/values
-        public IEnumerable<string> Get()
+        private IPropertyService service;
+
+        public PropertiesController(IPropertyService service)
         {
-            return new string[] { "value1", "value2" };
+            this.service = service;
+        }
+
+        // GET api/values
+        public IEnumerable<Property> Get()
+        {
+            return service.GetAll();
         }
 
         // GET api/values/5
