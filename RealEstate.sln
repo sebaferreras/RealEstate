@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "01.RealEstate.API", "01.RealEstate.API\01.RealEstate.API.csproj", "{7C3073C3-F06F-4847-9D86-F8E1D6543B41}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "01.RealEstate.API.Tests", "01.RealEstate.API.Tests\01.RealEstate.API.Tests.csproj", "{24F3967F-8C7D-47B5-B181-472D7EE106CC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7C3073C3-F06F-4847-9D86-F8E1D6543B41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C3073C3-F06F-4847-9D86-F8E1D6543B41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C3073C3-F06F-4847-9D86-F8E1D6543B41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C3073C3-F06F-4847-9D86-F8E1D6543B41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24F3967F-8C7D-47B5-B181-472D7EE106CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24F3967F-8C7D-47B5-B181-472D7EE106CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24F3967F-8C7D-47B5-B181-472D7EE106CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24F3967F-8C7D-47B5-B181-472D7EE106CC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
