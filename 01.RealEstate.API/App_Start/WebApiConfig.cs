@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Web.Http;
+﻿using System.Web.Http;
 using Microsoft.Owin.Security.OAuth;
 using Microsoft.Practices.Unity;
-using Newtonsoft.Json.Serialization;
 using _01.RealEstate.API.IoC;
 using _02.RealEstate.Domain.IRepositories;
 using _02.RealEstate.Domain.IServices;
@@ -19,14 +14,7 @@ namespace _01.RealEstate.API
         public static void Register(HttpConfiguration config)
         {
             // Set UnityResolver as DependencyResolver
-            var container = new UnityContainer();
-
-            // Services
-            container.RegisterType<IPropertyService, PropertyService>(new HierarchicalLifetimeManager());
-
-            // Repositories
-            container.RegisterType<IPropertyRepository, PropertyRepository>(new HierarchicalLifetimeManager());
-
+            var container = UnityMappings.RegisterTypes();
             config.DependencyResolver = new UnityResolver(container);
 
             // Web API configuration and services

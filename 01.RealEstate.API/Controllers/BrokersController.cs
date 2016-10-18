@@ -8,17 +8,17 @@ using _02.RealEstate.Domain.IServices;
 
 namespace _01.RealEstate.API.Controllers
 {
-    public class PropertiesController : ApiController
+    public class BrokersController : ApiController
     {
-        private readonly IPropertyService _service;
+        private readonly IBrokerService _service;
 
-        public PropertiesController(IPropertyService service)
+        public BrokersController(IBrokerService service)
         {
-            _service = service;
+            this._service = service;
         }
 
         // GET api/properties
-        [ResponseType(typeof(List<PropertyListItemDTO>))]
+        [ResponseType(typeof(List<BrokerDTO>))]
         public async Task<IHttpActionResult> Get()
         {
             var propertiesList = await _service.GetAll();
@@ -26,17 +26,17 @@ namespace _01.RealEstate.API.Controllers
         }
 
         // GET api/properties/5
-        [ResponseType(typeof(PropertyDTO))]
+        [ResponseType(typeof(BrokerDTO))]
         public async Task<IHttpActionResult> Get(int id)
         {
-            var propertyDto = await _service.Get(id);
+            var brokerDto = await _service.Get(id);
 
-            if (propertyDto == null)
+            if (brokerDto == null)
             {
                 return NotFound();
             }
 
-            return Ok(propertyDto);
+            return Ok(brokerDto);
         }
 
         // POST api/values
