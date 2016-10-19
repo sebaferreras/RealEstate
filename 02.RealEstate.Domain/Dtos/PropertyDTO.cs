@@ -1,12 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace _02.RealEstate.Domain.Dtos
+﻿namespace _02.RealEstate.Domain.Dtos
 {
     public class PropertyDTO
     {
         public int Id { get; set; }
 
         public string ImageUrl { get; set; }
+
+        public string PreviewImageUrl { get; set; }
 
         public string Title { get; set; }
 

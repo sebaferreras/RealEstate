@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using System.Web.Http.Description;
 using _02.RealEstate.Domain.Dtos;
 using _02.RealEstate.Domain.IServices;
 
 namespace _01.RealEstate.API.Controllers
 {
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class PropertiesController : ApiController
     {
         private readonly IPropertyService _service;

@@ -8,6 +8,8 @@ namespace _02.RealEstate.Domain.Entities
 
         public string ImageUrl { get; set; }
 
+        public string PreviewImageUrl { get; set; }
+
         [Required]
         public string Title { get; set; }
 

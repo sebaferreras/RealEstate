@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using _02.RealEstate.Domain.Entities;
 using _02.RealEstate.Domain.IRepositories;

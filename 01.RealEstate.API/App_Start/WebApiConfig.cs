@@ -1,11 +1,7 @@
-﻿using System.Web.Http;
+﻿using System.Net.Http.Headers;
+using System.Web.Http;
 using Microsoft.Owin.Security.OAuth;
-using Microsoft.Practices.Unity;
 using _01.RealEstate.API.IoC;
-using _02.RealEstate.Domain.IRepositories;
-using _02.RealEstate.Domain.IServices;
-using _02.RealEstate.Domain.Services;
-using _03.RealEstate.Data.Repositories;
 
 namespace _01.RealEstate.API
 {
@@ -13,6 +9,11 @@ namespace _01.RealEstate.API
     {
         public static void Register(HttpConfiguration config)
         {
+            // Enable CORS
+            config.EnableCors();
+
+            config.Formatters.JsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));
+
             // Set UnityResolver as DependencyResolver
             var container = UnityMappings.RegisterTypes();
             config.DependencyResolver = new UnityResolver(container);
