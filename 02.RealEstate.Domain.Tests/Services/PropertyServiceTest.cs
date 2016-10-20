@@ -8,101 +8,36 @@ using NUnit.Framework;
 using _02.RealEstate.Domain.Automapper;
 using _02.RealEstate.Domain.Dtos;
 using _02.RealEstate.Domain.Entities;
+using _02.RealEstate.Domain.Entities.Mocks;
 using _02.RealEstate.Domain.IRepositories;
 using _02.RealEstate.Domain.IServices;
 using _02.RealEstate.Domain.Services;
 using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
-namespace _02.RealEstate.Domain.Tests
+namespace _02.RealEstate.Domain.Tests.Services
 {
     [TestFixture]
     public class PropertyServiceTest
     {
         private Mock<IPropertyRepository> _propertyRepositoryMock;
         private IPropertyService _propertyServiceMock;
-
         private List<PropertyListItemDTO> _propertyListItemDtoMock;
         private PropertyDTO _propertyDtoMock;
-
-        #region _propertyListMock
-        private readonly List<Property> _propertyListMock = new List<Property>
-        {
-            new Property
-            {
-                Id = 1,
-                Title = "Property Title",
-                Location = "Property Location",
-                Bathrooms = 1,
-                Bedrooms = 2,
-                AskingPrice = 150000,
-                ImageUrl = "www.placehold.it/350x350",
-                PreviewImageUrl = "www.placehold.it/150x150",
-                Description = "Property Description",
-                BrokerId = 1,
-                Broker = new Broker
-                        {
-                            Id = 1,
-                            Name = "Broker Name",
-                            Position = "Broker Position",
-                            Email = "email@domain.com",
-                            ImageUrl = "www.placehold.it/350x350",
-                            MobilePhoneNumber = "618 437410",
-                            OfficePhoneNumber = "621 123951"
-                        }
-            },
-            new Property
-            {
-                Id = 2,
-                Title = "Property Title",
-                Location = "Property Location",
-                Bathrooms = 1,
-                Bedrooms = 2,
-                AskingPrice = 150000,
-                ImageUrl = "www.placehold.it/350x350",
-                PreviewImageUrl = "www.placehold.it/150x150",
-                Description = "Property Description",
-                BrokerId = 2,
-                Broker = new Broker
-                        {
-                            Id = 2,
-                            Name = "Broker Name",
-                            Position = "Broker Position",
-                            Email = "email@domain.com",
-                            ImageUrl = "www.placehold.it/350x350",
-                            MobilePhoneNumber = "618 437410",
-                            OfficePhoneNumber = "621 123951"
-                        }
-            },
-            new Property
-            {
-                Id = 3,
-                Title = "Property Title",
-                Location = "Property Location",
-                Bathrooms = 1,
-                Bedrooms = 2,
-                AskingPrice = 150000,
-                ImageUrl = "www.placehold.it/350x350",
-                PreviewImageUrl = "www.placehold.it/150x150",
-                Description = "Property Description",
-                BrokerId = 3,
-                Broker = new Broker
-                        {
-                            Id = 3,
-                            Name = "Broker Name",
-                            Position = "Broker Position",
-                            Email = "email@domain.com",
-                            ImageUrl = "www.placehold.it/350x350",
-                            MobilePhoneNumber = "618 437410",
-                            OfficePhoneNumber = "621 123951"
-                        }
-            }
-
-        };
-        #endregion
+        private List<Property> _propertyListMock;
 
         [SetUp]
         public void Initialize()
         {
+            // Since the repository returns Broker entities but the service returns BrokerDTO entities we need to initialize Automapper
+            AutomapperBootstrapper.Initialize();
+
+            // Initialize the data we're going to use in the tests
+            _propertyListMock = PropertyMocks.GetPropertyListMock();
+
+            // Get the DTO's by using the moked list
+            _propertyListItemDtoMock = Mapper.Map<List<Property>, List<PropertyListItemDTO>>(_propertyListMock);
+            _propertyDtoMock = Mapper.Map<Property, PropertyDTO>(_propertyListMock.ElementAt(0));
+
             _propertyRepositoryMock = new Mock<IPropertyRepository>();
 
             // Initialize the mocked repository
@@ -113,27 +48,19 @@ namespace _02.RealEstate.Domain.Tests
             _propertyRepositoryMock.Setup(repository => repository.Get(9))
                 .ReturnsAsync(null);
 
-            // Since the repository returns Property entities but the service returns DTO entities
-            // we need to initialize Automapper
-            AutomapperBootstrapper.Initialize();
-
-            // Get the DTO's by using the moked list
-            _propertyListItemDtoMock = Mapper.Map<List<Property>, List<PropertyListItemDTO>>(_propertyListMock);
-            _propertyDtoMock = Mapper.Map<Property, PropertyDTO>(_propertyListMock.ElementAt(0));
-
             // Use the mock to create an instance of the service
             _propertyServiceMock = new PropertyService(_propertyRepositoryMock.Object);
         }
 
         [Test]
-        public async Task GetAllMethodShouldNotReturnNull()
+        public async Task GetAll_ShouldNotReturnNull()
         {
             var result = await _propertyServiceMock.GetAll();
             Assert.IsNotNull(result);
         }
 
         [Test]
-        public async Task GetAllMethodShouldReturnListOfPropertyListItemDTOType()
+        public async Task GetAll_ShouldReturnListOfPropertyListItemDTOType()
         {
             var result = await _propertyServiceMock.GetAll();
             Assert.IsNotNull(result);
@@ -141,7 +68,7 @@ namespace _02.RealEstate.Domain.Tests
         }
 
         [Test]
-        public async Task GetAllMethodShouldReturnListOfPropertyListItemDTOEntities()
+        public async Task GetAll_ShouldReturnListOfPropertyListItemDTOEntities()
         {
             var result = await _propertyServiceMock.GetAll();
             Assert.IsNotNull(result);
@@ -152,14 +79,14 @@ namespace _02.RealEstate.Domain.Tests
         }
 
         [Test]
-        public async Task GetMethodShouldReturnNullIfPropertyDoesNotExists()
+        public async Task Get_ShouldReturnNullIfPropertyDoesNotExists()
         {
             var result = await _propertyServiceMock.Get(9);
             Assert.IsNull(result);
         }
 
         [Test]
-        public async Task GetMethodShouldReturnPropertyDTOIfPropertyExists()
+        public async Task Get_ShouldReturnPropertyDTOIfPropertyExists()
         {
             var result = await _propertyServiceMock.Get(1);
             Assert.IsNotNull(result);

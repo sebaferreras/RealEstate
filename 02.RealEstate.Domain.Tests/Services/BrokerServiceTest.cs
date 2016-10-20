@@ -8,80 +8,35 @@ using NUnit.Framework;
 using _02.RealEstate.Domain.Automapper;
 using _02.RealEstate.Domain.Dtos;
 using _02.RealEstate.Domain.Entities;
+using _02.RealEstate.Domain.Entities.Mocks;
 using _02.RealEstate.Domain.IRepositories;
 using _02.RealEstate.Domain.IServices;
 using _02.RealEstate.Domain.Services;
 using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
-namespace _02.RealEstate.Domain.Tests
+namespace _02.RealEstate.Domain.Tests.Services
 {
     [TestFixture]
     public class BrokerServiceTest
     {
+        // Mocks
         private Mock<IBrokerRepository> _brokerRepositoryMock;
         private IBrokerService _brokerServiceMock;
-
         private List<BrokerDTO> _brokerListDtoMock;
-
-        #region _brokerListMock
-        private readonly List<Broker> _brokerListMock = new List<Broker>
-        {
-            new Broker
-            {
-                Id = 1,
-                Name = "Broker Name",
-                Position = "Broker Position",
-                Email = "email@domain.com",
-                ImageUrl = "www.placehold.it/350x350",
-                MobilePhoneNumber = "618 437410",
-                OfficePhoneNumber = "621 123951"
-            },
-            new Broker
-            {
-                Id = 2,
-                Name = "Broker Name",
-                Position = "Broker Position",
-                Email = "email@domain.com",
-                ImageUrl = "www.placehold.it/350x350",
-                MobilePhoneNumber = "618 437410",
-                OfficePhoneNumber = "621 123951"
-            },
-            new Broker
-            {
-                Id = 3,
-                Name = "Broker Name",
-                Position = "Broker Position",
-                Email = "email@domain.com",
-                ImageUrl = "www.placehold.it/350x350",
-                MobilePhoneNumber = "618 437410",
-                OfficePhoneNumber = "621 123951"
-            },
-            new Broker
-            {
-                Id = 4,
-                Name = "Broker Name",
-                Position = "Broker Position",
-                Email = "email@domain.com",
-                ImageUrl = "www.placehold.it/350x350",
-                MobilePhoneNumber = "618 437410",
-                OfficePhoneNumber = "621 123951"
-            },
-            new Broker
-            {
-                Id = 5,
-                Name = "Broker Name",
-                Position = "Broker Position",
-                Email = "email@domain.com",
-                ImageUrl = "www.placehold.it/350x350",
-                MobilePhoneNumber = "618 437410",
-                OfficePhoneNumber = "621 123951"
-            }
-        };
-        #endregion
+        private List<Broker> _brokerListMock;
 
         [SetUp]
         public void Initialize()
         {
+            // Since the repository returns Broker entities but the service returns BrokerDTO entities we need to initialize Automapper
+            AutomapperBootstrapper.Initialize();
+
+            // Initialize the data we're going to use in the tests
+            _brokerListMock = BrokerMocks.GetBrokerListMock();
+
+            // Get the list of DTO's by using the moked list
+            _brokerListDtoMock = Mapper.Map<List<Broker>, List<BrokerDTO>>(_brokerListMock);
+
             _brokerRepositoryMock = new Mock<IBrokerRepository>();
 
             // Initialize the mocked repository
@@ -92,26 +47,19 @@ namespace _02.RealEstate.Domain.Tests
             _brokerRepositoryMock.Setup(repository => repository.Get(9))
                 .ReturnsAsync(null);
 
-            // Since the repository returns Broker entities but the service returns BrokerDTO entities
-            // we need to initialize Automapper
-            AutomapperBootstrapper.Initialize();
-
-            // Get the list of DTO's by using the moked list
-            _brokerListDtoMock = Mapper.Map<List<Broker>, List<BrokerDTO>>(_brokerListMock);
-
             // Use the mock to create an instance of the service
             _brokerServiceMock = new BrokerService(_brokerRepositoryMock.Object);
         }
 
         [Test]
-        public async Task GetAllMethodShouldNotReturnNull()
+        public async Task GetAll_ShouldNotReturnNull()
         {
             var result = await _brokerServiceMock.GetAll();
             Assert.IsNotNull(result);
         }
 
         [Test]
-        public async Task GetAllMethodShouldReturnListOfBrokerEntitiesType()
+        public async Task GetAll_ShouldReturnListOfBrokerEntitiesType()
         {
             var result = await _brokerServiceMock.GetAll();
             Assert.IsNotNull(result);
@@ -119,7 +67,7 @@ namespace _02.RealEstate.Domain.Tests
         }
 
         [Test]
-        public async Task GetAllMethodShouldReturnListOfBrokerDTOEntities()
+        public async Task GetAll_ShouldReturnListOfBrokerDTOEntities()
         {
             var result = await _brokerServiceMock.GetAll();
             Assert.IsNotNull(result);
@@ -132,14 +80,14 @@ namespace _02.RealEstate.Domain.Tests
         }
 
         [Test]
-        public async Task GetMethodShouldReturnNullIfBrokerDoesNotExists()
+        public async Task Get_ShouldReturnNullIfBrokerDoesNotExists()
         {
             var result = await _brokerServiceMock.Get(9);
             Assert.IsNull(result);
         }
 
         [Test]
-        public async Task GetMethodShouldReturnBrokerDTOIfBrokerExists()
+        public async Task Get_ShouldReturnBrokerDTOIfBrokerExists()
         {
             var result = await _brokerServiceMock.Get(1);
             Assert.IsNotNull(result);

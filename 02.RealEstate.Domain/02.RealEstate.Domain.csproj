@@ -45,6 +45,8 @@
     <Compile Include="Dtos\PropertyDTO.cs" />
     <Compile Include="Dtos\PropertyListItemDTO.cs" />
     <Compile Include="Entities\Broker.cs" />
+    <Compile Include="Entities\Mocks\PropertyMocks.cs" />
+    <Compile Include="Entities\Mocks\BrokerMocks.cs" />
     <Compile Include="Entities\Property.cs" />
     <Compile Include="IRepositories\IBrokerRepository .cs" />
     <Compile Include="IRepositories\IPropertyRepository.cs" />
