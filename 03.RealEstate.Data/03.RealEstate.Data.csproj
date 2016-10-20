@@ -52,6 +52,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Context\IRealStateContext.cs" />
     <Compile Include="Context\RealEstateContext.cs" />
     <Compile Include="Repositories\BrokerRepository.cs" />
     <Compile Include="Repositories\PropertyRepository.cs" />

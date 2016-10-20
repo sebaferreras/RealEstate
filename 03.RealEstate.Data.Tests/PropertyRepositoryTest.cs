@@ -1,10 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using _02.RealEstate.Domain.Entities;
 using _02.RealEstate.Domain.IRepositories;
+using _03.RealEstate.Data.Context;
+using _03.RealEstate.Data.Repositories;
+using _03.RealEstate.Data.Tests.Helpers;
 using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
 namespace _03.RealEstate.Data.Tests
@@ -12,11 +18,12 @@ namespace _03.RealEstate.Data.Tests
     [TestFixture]
     public class PropertyRepositoryTest
     {
-
-        private Mock<IPropertyRepository> _propertyRepositoryMock;
+        private Mock<IRealStateContext> _realStateContextMock;
+        private Mock<DbSet<Property>> _propertyDbSetMock;
+        private IPropertyRepository _propertyRepositoryMock;
 
         #region PropertyListMock
-        private List<Property> propertyListMock = new List<Property>
+        private readonly List<Property> _propertyListMock = new List<Property>
         {
             new Property
             {
@@ -94,51 +101,71 @@ namespace _03.RealEstate.Data.Tests
         [SetUp]
         public void Initialize()
         {
-            _propertyRepositoryMock = new Mock<IPropertyRepository>();
+            var data = _propertyListMock.AsQueryable();
 
-            // Initialize the mocked service
-            _propertyRepositoryMock.Setup(reposritory => reposritory.GetAll())
-                .ReturnsAsync(propertyListMock);
-            _propertyRepositoryMock.Setup(reposritory => reposritory.Get(1))
-                .ReturnsAsync(propertyListMock.ElementAt(0));
-            _propertyRepositoryMock.Setup(reposritory => reposritory.Get(9))
-                .ReturnsAsync(null);
-            _propertyRepositoryMock.Setup(repository => repository.Add(propertyListMock.ElementAt(0)))
-                .Throws(new NotImplementedException());
-            _propertyRepositoryMock.Setup(repository => repository.Update(propertyListMock.ElementAt(0)))
-                .Throws(new NotImplementedException());
-            _propertyRepositoryMock.Setup(repository => repository.Delete(propertyListMock.ElementAt(0).Id))
-                .Throws(new NotImplementedException());
+            // First we mock the DbSet
+            _propertyDbSetMock = new Mock<DbSet<Property>>();
+
+            // Since we're faking the db context with async methods, we need to set up a few things
+            _propertyDbSetMock.As<IDbAsyncEnumerable<Property>>()
+                .Setup(m => m.GetAsyncEnumerator())
+                .Returns(new TestDbAsyncEnumerator<Property>(data.GetEnumerator()));
+
+            _propertyDbSetMock.As<IQueryable<Property>>()
+                .Setup(m => m.Provider)
+                .Returns(new TestDbAsyncQueryProvider<Property>(data.Provider));
+
+            _propertyDbSetMock.As<IQueryable<Property>>().Setup(m => m.Expression).Returns(data.Expression);
+            _propertyDbSetMock.As<IQueryable<Property>>().Setup(m => m.ElementType).Returns(data.ElementType);
+            _propertyDbSetMock.As<IQueryable<Property>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator());
+
+            // Now we can mock the entire context
+            _realStateContextMock = new Mock<IRealStateContext>();
+            _realStateContextMock.Setup(context => context.Properties).Returns(_propertyDbSetMock.Object);
+
+            // Initialize the repository with the mocked dbContext
+            _propertyRepositoryMock = new PropertyRepository(_realStateContextMock.Object);
         }
 
         [Test]
-        public void GetAllMethodShouldNotReturnNull()
+        public async Task GetAllMethodShouldNotReturnNull()
         {
-            var result = _propertyRepositoryMock.Object.GetAll().Result;
+            var result = await _propertyRepositoryMock.GetAll();
             Assert.IsNotNull(result);
         }
 
         [Test]
-        public void GetAllMethodShouldReturnList()
+        public async Task GetAllMethodShouldReturnListOfPropertyEntitiesType()
         {
-            var result = _propertyRepositoryMock.Object.GetAll().Result;
+            var result = await _propertyRepositoryMock.GetAll();
             Assert.IsNotNull(result);
-            Assert.AreEqual(result.Count, propertyListMock.Count);
+            Assert.IsInstanceOfType(result, _propertyListMock.GetType());
         }
 
         [Test]
-        public void GetMethodShouldReturnNullIfPropertyDoesNotExists()
+        public async Task GetAllMethodShouldReturnListOfPropertyEntities()
         {
-            var result = _propertyRepositoryMock.Object.Get(9).Result;
+            var result = await _propertyRepositoryMock.GetAll();
+            Assert.IsNotNull(result);
+            Assert.AreEqual(result.Count, _propertyListMock.Count);
+            Assert.AreEqual(result.ElementAt(0), _propertyListMock.ElementAt(0));
+            Assert.AreEqual(result.ElementAt(1), _propertyListMock.ElementAt(1));
+            Assert.AreEqual(result.ElementAt(2), _propertyListMock.ElementAt(2));
+        }
+
+        [Test]
+        public async Task GetMethodShouldReturnNullIfPropertyDoesNotExists()
+        {
+            var result = await _propertyRepositoryMock.Get(9);
             Assert.IsNull(result);
         }
 
         [Test]
-        public void GetMethodShouldReturnPropertyIfPropertyExists()
+        public async Task GetMethodShouldReturnPropertyIfPropertyExists()
         {
-            var result = _propertyRepositoryMock.Object.Get(1).Result;
+            var result = await _propertyRepositoryMock.Get(1);
             Assert.IsNotNull(result);
-            Assert.IsNotNull(result);
+            Assert.AreEqual(result, _propertyListMock.ElementAt(0));
         }
 
         [Test]
@@ -146,11 +173,11 @@ namespace _03.RealEstate.Data.Tests
         {
             try
             {
-                _propertyRepositoryMock.Object.Add(propertyListMock.ElementAt(0));
+                _propertyRepositoryMock.Add(_propertyListMock.ElementAt(0));
             }
             catch (Exception ex)
-            {   
-                Assert.AreEqual(ex.GetType(),  typeof(NotImplementedException));
+            {
+                Assert.AreEqual(ex.GetType(), typeof(NotImplementedException));
             }
         }
 
@@ -159,7 +186,7 @@ namespace _03.RealEstate.Data.Tests
         {
             try
             {
-                _propertyRepositoryMock.Object.Update(propertyListMock.ElementAt(0));
+                _propertyRepositoryMock.Update(_propertyListMock.ElementAt(0));
             }
             catch (Exception ex)
             {
@@ -172,7 +199,7 @@ namespace _03.RealEstate.Data.Tests
         {
             try
             {
-                _propertyRepositoryMock.Object.Delete(propertyListMock.ElementAt(0).Id);
+                _propertyRepositoryMock.Delete(_propertyListMock.ElementAt(0).Id);
             }
             catch (Exception ex)
             {

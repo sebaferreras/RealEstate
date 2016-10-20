@@ -29,6 +29,6 @@ namespace _02.RealEstate.Domain.Entities
         public int BrokerId { get; set; }
 
         // Navigation property
-        public Broker Broker { get; set; }
+        public virtual Broker Broker { get; set; }
     }
 }

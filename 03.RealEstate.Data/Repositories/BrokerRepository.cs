@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using _02.RealEstate.Domain.Entities;
 using _02.RealEstate.Domain.IRepositories;
@@ -11,7 +9,17 @@ namespace _03.RealEstate.Data.Repositories
 {
     public class BrokerRepository : IBrokerRepository
     {
-        private readonly RealEstateContext _db = new RealEstateContext();
+        private readonly IRealStateContext _db;
+
+        public BrokerRepository()
+        {
+            _db = new RealEstateContext();
+        }
+
+        public BrokerRepository(IRealStateContext realStateContext)
+        {
+            _db = realStateContext;
+        }
 
         /// <summary>
         /// Get all the properties
@@ -29,7 +37,7 @@ namespace _03.RealEstate.Data.Repositories
         /// <returns>Task that returns a Broker entity</returns>
         public Task<Broker> Get(int id)
         {
-            return _db.Brokers.FirstAsync(p => p.Id == id);
+            return _db.Brokers.FirstOrDefaultAsync(p => p.Id == id);
         }
 
         /// <summary>

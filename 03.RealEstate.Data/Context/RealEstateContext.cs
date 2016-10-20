@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Data.Entity;
 using _02.RealEstate.Domain.Entities;
 
 namespace _03.RealEstate.Data.Context
 {
-    public class RealEstateContext : DbContext
+    public class RealEstateContext : DbContext, IRealStateContext
     {
         public RealEstateContext(): base("name=DefaultConnection")
         {
